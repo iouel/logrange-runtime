@@ -120,6 +120,7 @@ publication requires explicit maintainer authorization.
 - [Research and evidence](docs/research.md)
 - [Provenance](NOTICE.md)
 - [Release-readiness audit](docs/release-readiness.md)
+- [`v1.0.0` release preparation](docs/releases/v1.0.0.md)
 
 ## License
 
