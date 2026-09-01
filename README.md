@@ -57,8 +57,8 @@ int main() {
 }
 ```
 
-For a complete program that checks a sum of underflowing terms, see
-[`examples/quickstart`](examples/quickstart).
+See [`examples/quickstart`](examples/quickstart) for its CMake wiring and CI
+test.
 
 ## Install with CMake
 
@@ -91,6 +91,14 @@ target_link_libraries(your_target PRIVATE LogRange::logrange)
 
 When vendored, LogRange does not build its tests by default and does not add
 its warning flags to your target.
+
+## Release process
+
+`iouel/logrange-runtime` has not yet published a Git tag or GitHub Release.
+The `1.0.0` version in [CHANGELOG.md](CHANGELOG.md) and in the header/CMake
+package metadata is the version inherited at extraction time, not a
+published release. Creating a tag, a GitHub Release, or any package
+publication requires explicit maintainer authorization.
 
 ## Constraints
 

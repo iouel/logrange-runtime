@@ -64,11 +64,17 @@ that prefix/source tree.
 
 ## Release status
 
-There are no code or packaging blockers from this audit. Before any release,
-the maintainer must explicitly authorize it and reconcile the changelog's
-`1.0.0` release heading with the absence of a corresponding tag or GitHub
-Release. The research README's `SameMinorVersion` wording should also be made
-consistent with this package's `SameMajorVersion` metadata.
+There are no code or packaging blockers from this audit. A documentation-only
+follow-up reconciled the changelog's `1.0.0` heading with the absence of a
+corresponding tag or GitHub Release: [CHANGELOG.md](../CHANGELOG.md) and
+[README.md](../README.md) now state explicitly that `1.0.0` is version
+metadata inherited at extraction time, not a published release, and that
+publishing a tag, GitHub Release, or package requires explicit maintainer
+authorization. The remaining decision — whether and when to authorize a
+first `v1.0.0` tag/Release — is for the maintainer, not this audit. The
+research repository's `SameMinorVersion` wording (distinct from this
+package's `SameMajorVersion` metadata) is also unresolved, but is out of
+scope for this repository's documentation.
 
 ### Non-blocking recommendations
 

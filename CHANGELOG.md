@@ -2,12 +2,22 @@
 
 All notable changes to this product repository are documented here.
 
-## 1.0.0 — 2026-08-21
+## 1.0.0 (unreleased) — extracted 2026-08-21
 
-Initial release of the standalone runtime library, extracted from the
-research repository [`iouel/logrange`](https://github.com/iouel/logrange)
-(branch `projectsummary`, commit `b288b150abbba4a2cc8cbfc63ef102724e7803f6`).
-See [NOTICE.md](NOTICE.md) for full provenance.
+`1.0.0` is the version metadata inherited at extraction time (see
+`LOGRANGE_VERSION_STRING` in
+[`include/logrange/log_math.h`](include/logrange/log_math.h) and the CMake
+package version derived from it); it is **not** a claim that this
+repository has published a `v1.0.0` Git tag or GitHub Release. No tag or
+Release exists for `iouel/logrange-runtime` yet — publishing one requires
+explicit maintainer authorization (see "Release process" in
+[README.md](README.md)).
+
+This entry describes the initial content of the standalone runtime library,
+extracted from the research repository
+[`iouel/logrange`](https://github.com/iouel/logrange) (branch
+`projectsummary`, commit `b288b150abbba4a2cc8cbfc63ef102724e7803f6`). See
+[NOTICE.md](NOTICE.md) for full provenance.
 
 **Included**
 
