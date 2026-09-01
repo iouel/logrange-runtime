@@ -81,8 +81,11 @@ ctest --test-dir build -C Release --output-on-failure
 
 ## Release process
 
-Releases, including tags, GitHub Releases, and any package publication,
-require explicit maintainer authorization.
+`iouel/logrange-runtime` has not yet published a Git tag or GitHub Release.
+The `1.0.0` version in [CHANGELOG.md](CHANGELOG.md) and in the header/CMake
+package metadata is the version inherited at extraction time, not a
+published release. Creating a tag, a GitHub Release, or any package
+publication requires explicit maintainer authorization.
 
 ## Constraints
 
