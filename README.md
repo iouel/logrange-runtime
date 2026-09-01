@@ -79,6 +79,11 @@ cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
 
+## Release process
+
+Releases, including tags, GitHub Releases, and any package publication,
+require explicit maintainer authorization.
+
 ## Constraints
 
 - **Double precision only**, by design — the error contract's constants
