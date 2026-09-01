@@ -1,7 +1,9 @@
 # Release-readiness audit
 
-**Audit date:** 2026-09-01  
-**Runtime audited:** `b6646164ca7ef11893cbcfe77228d5d0db12c614`  
+**Audit date:** 2026-09-01
+
+**Runtime audited:** `b6646164ca7ef11893cbcfe77228d5d0db12c614`
+
 **Research audited:** [`projectsummary` at `99f0995bb245af12ec5e282e73eec0796dc91cfd`](https://github.com/iouel/logrange/commit/99f0995bb245af12ec5e282e73eec0796dc91cfd)
 
 ## Outcome
