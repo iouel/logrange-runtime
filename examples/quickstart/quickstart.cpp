@@ -27,8 +27,7 @@ int main() {
   std::printf("linear loop = %g (underflowed)\n", 1000.0 * std::exp(-800.0));
   std::printf("version     = %s\n", LOGRANGE_VERSION_STRING);
 
-  // Loose: this checks that the package works, not the error bound. The
-  // bound has its own suites (test_accuracy, bound_search).
+  // Loose: this checks package use, not the detailed accuracy contract.
   if (!(err < 1e-12)) {
     std::printf("FAIL: log_abs off by %g\n", err);
     return 1;
