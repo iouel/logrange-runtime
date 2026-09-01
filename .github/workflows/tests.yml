@@ -1,0 +1,107 @@
+# Test suite on push/PR, across both flag branches of CMakeLists:
+# MSVC (/W4 /WX /fp:precise /permissive-) and gcc/clang
+# (-Wall -Wextra -Werror -ffp-contract=off). The library is header-only and
+# claims a machine-independent error bound, so it has to hold on a libm we
+# do not control.
+name: tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows-msvc
+            os: windows-latest
+            configure: cmake -S . -B build
+          - name: ubuntu-gcc
+            os: ubuntu-latest
+            cxx: g++
+            configure: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
+          - name: ubuntu-clang
+            os: ubuntu-latest
+            cxx: clang++
+            configure: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure
+        run: ${{ matrix.configure }}
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      # The observed-vs-bound table is the point of the second toolchain:
+      # a bound that only holds on one libm is not a bound.
+      - name: Accuracy table (observed vs bound)
+        run: ctest --test-dir build -C Release -R accuracy -V
+      # Packaging is a claim like any other: install to a throwaway prefix
+      # and build the README quickstart against it as a real consumer
+      # would. This catches install rules, the exported target, and the
+      # README drifting apart from each other.
+      - name: Install to a prefix
+        run: cmake --install build --config Release --prefix "${{ runner.temp }}/lrprefix"
+      - name: Consumer build via find_package
+        run: cmake -S examples/quickstart -B "${{ runner.temp }}/lrconsumer" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ runner.temp }}/lrprefix"
+      - name: Consumer compile
+        run: cmake --build "${{ runner.temp }}/lrconsumer" --config Release
+      - name: Consumer run
+        run: ctest --test-dir "${{ runner.temp }}/lrconsumer" -C Release --output-on-failure
+      # Vendored consumer: add_subdirectory() instead of find_package(),
+      # proving the same target works unpackaged and that this project's
+      # own -Werror / test build does not leak into a consumer that embeds
+      # the source tree directly.
+      - name: Vendored consumer via add_subdirectory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ runner.temp }}/lrvendor/logrange"
+          cp -R include cmake CMakeLists.txt "${{ runner.temp }}/lrvendor/logrange/"
+          cat > "${{ runner.temp }}/lrvendor/CMakeLists.txt" <<'EOF'
+          cmake_minimum_required(VERSION 3.20)
+          project(logrange_vendor_consumer LANGUAGES CXX)
+          add_subdirectory(logrange)
+          add_executable(vendor_app main.cpp)
+          target_link_libraries(vendor_app PRIVATE LogRange::logrange)
+          enable_testing()
+          add_test(NAME vendor_app COMMAND vendor_app)
+          EOF
+          cat > "${{ runner.temp }}/lrvendor/main.cpp" <<'EOF'
+          #include <logrange/log_math.h>
+          #include <cmath>
+          #include <cstdio>
+          int main() {
+            logrange::pos_accum acc;
+            acc.add_log(-800.0);
+            acc.add_log(-800.0);
+            logrange::log_value total = acc.to_log_value();
+            double expect = -800.0 + std::log(2.0);
+            if (std::fabs(total.log_abs - expect) > 1e-12) {
+              std::printf("FAIL: vendored consumer got %.12f, expected %.12f\n",
+                          total.log_abs, expect);
+              return 1;
+            }
+            std::puts("vendored consumer passed");
+            return 0;
+          }
+          EOF
+          cmake -S "${{ runner.temp }}/lrvendor" -B "${{ runner.temp }}/lrvendor-build" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "${{ runner.temp }}/lrvendor-build" --config Release
+          ctest --test-dir "${{ runner.temp }}/lrvendor-build" -C Release --output-on-failure
+      # The fast-math refusal is a claim like any other. Assert it actually
+      # fires — an #error behind an unreachable condition would look
+      # exactly like a working guard.
+      - name: Fast-math guard fires
+        if: runner.os == 'Linux'
+        run: |
+          if ${{ matrix.cxx }} -std=c++17 -ffast-math -Iinclude -Itests -c tests/test_log_math.cpp -o /dev/null 2>/dev/null; then
+            echo "FAIL: header compiled under -ffast-math; the guard did not fire"
+            exit 1
+          fi
+          ${{ matrix.cxx }} -std=c++17 -ffast-math -DLOGRANGE_ALLOW_FAST_MATH -Iinclude -Itests -c tests/test_log_math.cpp -o /dev/null
+          echo "guard fires, and the documented opt-out still builds"
