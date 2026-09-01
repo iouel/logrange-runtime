@@ -57,8 +57,8 @@ int main() {
 }
 ```
 
-For a complete program that checks a sum of underflowing terms, see
-[`examples/quickstart`](examples/quickstart).
+See [`examples/quickstart`](examples/quickstart) for its CMake wiring and CI
+test.
 
 ## Install with CMake
 
